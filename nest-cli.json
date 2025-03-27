@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/back-office/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/back-office/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/back-office",
+  "projects": {
+    "back-office": {
+      "type": "application",
+      "root": "apps/back-office",
+      "entryFile": "main",
+      "sourceRoot": "apps/back-office/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/back-office/tsconfig.app.json"
+      }
+    },
+    "product-management": {
+      "type": "application",
+      "root": "apps/product-management",
+      "entryFile": "main",
+      "sourceRoot": "apps/product-management/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/product-management/tsconfig.app.json"
+      }
+    },
+    "orders-management": {
+      "type": "application",
+      "root": "apps/orders-management",
+      "entryFile": "main",
+      "sourceRoot": "apps/orders-management/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/orders-management/tsconfig.app.json"
+      }
+    },
+    "customer-management": {
+      "type": "application",
+      "root": "apps/customer-management",
+      "entryFile": "main",
+      "sourceRoot": "apps/customer-management/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/customer-management/tsconfig.app.json"
+      }
+    },
+    "promotion-management": {
+      "type": "application",
+      "root": "apps/promotion-management",
+      "entryFile": "main",
+      "sourceRoot": "apps/promotion-management/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/promotion-management/tsconfig.app.json"
+      }
+    },
+    "payment-management": {
+      "type": "application",
+      "root": "apps/payment-management",
+      "entryFile": "main",
+      "sourceRoot": "apps/payment-management/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/payment-management/tsconfig.app.json"
+      }
+    },
+    "shipping-management": {
+      "type": "application",
+      "root": "apps/shipping-management",
+      "entryFile": "main",
+      "sourceRoot": "apps/shipping-management/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/shipping-management/tsconfig.app.json"
+      }
+    },
+    "report-service": {
+      "type": "application",
+      "root": "apps/report-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/report-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/report-service/tsconfig.app.json"
+      }
+    },
+    "employee-management": {
+      "type": "application",
+      "root": "apps/employee-management",
+      "entryFile": "main",
+      "sourceRoot": "apps/employee-management/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/employee-management/tsconfig.app.json"
+      }
+    },
+    "cronjob-servive": {
+      "type": "application",
+      "root": "apps/cronjob-servive",
+      "entryFile": "main",
+      "sourceRoot": "apps/cronjob-servive/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/cronjob-servive/tsconfig.app.json"
+      }
+    }
+  }
+}
