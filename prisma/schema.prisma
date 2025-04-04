@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model employee {
+  id          Int      @id @default(autoincrement()) 
+  username    String   @db.VarChar(100)
+  password    String
+  email       String   @unique @db.VarChar(255)
+  firstName   String   @db.VarChar(100)
+  lastName    String   @db.VarChar(100)
+  phone       String?  @unique @db.VarChar(10) 
+  role        employee_role
+  status      employee_status   @default(ACTIVE)
+  last_ip     String?
+  last_active DateTime? @default(now())
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  delete_at   DateTime @default(now())
+
+
+  employee_permissions employee_permission[]
+
+  @@index([email])
+  @@index([lastName, firstName])
+  @@index([status])
+}
+
+model permission {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique  
+  description String   
+  created_at  DateTime @default(now()) 
+  updated_at  DateTime @updatedAt    
+  delete_at   DateTime @default(now())
+
+  employees   employee_permission[]
+}
+
+model employee_permission {
+  id            Int      @id @default(autoincrement())
+  emp_id        Int
+  permission_id Int
+  created_at    DateTime @default(now()) 
+  updated_at    DateTime @updatedAt
+  delete_at     DateTime @default(now())     
+
+  employee      employee   @relation(fields: [emp_id], references: [id] )
+  permission    permission @relation(fields: [permission_id], references: [id] )
+
+  @@index([emp_id])
+  @@index([permission_id])
+  @@unique([emp_id, permission_id]) 
+}
+
+
+enum employee_role {
+  SUPER_ADMIN    // ✅ จัดการทุกอย่างในระบบ รวมถึงเพิ่ม/ลบแอดมิน
+  ADMIN          // ✅ จัดการคำสั่งซื้อ, สินค้า, และลูกค้า แต่ไม่สามารถแก้ไขแอดมินคนอื่นได้
+  MANAGER        // ✅ ดูแลพนักงานและตรวจสอบรายงานยอดขาย
+  STAFF          // ✅ จัดการคำสั่งซื้อ แต่ไม่สามารถเข้าถึงข้อมูลอื่นๆ
+}
+
+// ENUM สำหรับสถานะบัญชีพนักงาน
+enum employee_status {
+  ACTIVE       // ✅ บัญชีใช้งานได้ปกติ
+  INACTIVE     // ✅ บัญชีถูกปิดชั่วคราว
+  SUSPENDED    // ❌ บัญชีถูกระงับ
+}
+
+

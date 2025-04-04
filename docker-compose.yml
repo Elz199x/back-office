@@ -1,0 +1,51 @@
+
+services:
+  postgres-master:
+    image: postgres:15
+    container_name: postgres-master
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER_MASTER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_MASTER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_REPLICATION_USER: ${POSTGRES_REPLICATION_USER}
+      POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - master_data:/var/lib/postgresql/data
+      - ./init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
+    networks:
+      - postgres-network
+
+  postgres-replica:
+    image: postgres:15
+    container_name: postgres-replica
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER_REPLICA}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_REPLICA}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_REPLICATION_ROLE: ${POSTGRES_REPLICATION_ROLE}
+      POSTGRES_REPLICATION_PRIMARY_HOST: ${POSTGRES_REPLICATION_PRIMARY_HOST}
+      POSTGRES_REPLICATION_PRIMARY_PORT: ${POSTGRES_REPLICATION_PRIMARY_PORT}
+      POSTGRES_REPLICATION_USER: ${POSTGRES_REPLICATION_USER}
+      POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD}
+    ports:
+      - "5433:5432"
+    depends_on:
+      - postgres-master
+    networks:
+      - postgres-network
+
+volumes:
+  master_data:
+
+networks:
+  postgres-network:
+    driver: bridge 
+
