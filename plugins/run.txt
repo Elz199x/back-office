@@ -1,0 +1,2 @@
+curl -X POST -H "Content-Type: application/json"   --data @plugins/confluentinc-kafka-connect-jdbc-10.8.2/postgresql-connector.json   http://localhost:8083/connectors
+curl -X POST -H "Content-Type: application/json"   --data @plugins/confluentinc-kafka-connect-elasticsearch-14.1.2/elasticsearch-sink-connector.json   http://localhost:8083/connectors

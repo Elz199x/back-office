@@ -79,5 +79,9 @@
     "roots": [
       "<rootDir>/apps/"
     ]
-  }
+  },
+  "prisma": {
+  "seed": "ts-node prisma/seed.ts"
+}
+
 }

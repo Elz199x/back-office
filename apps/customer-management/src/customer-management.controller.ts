@@ -9,4 +9,8 @@ export class CustomerManagementController {
   getHello(): string {
     return this.customerManagementService.getHello();
   }
+  @Get('health')
+  healthCheck(): string {
+    return this.customerManagementService.healthCheck()
+  }
 }

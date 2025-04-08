@@ -38,12 +38,14 @@ model employee {
 }
 
 model permission {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique  
-  description String   
-  created_at  DateTime @default(now()) 
-  updated_at  DateTime @updatedAt    
-  delete_at   DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  name          String   @unique  
+  description   String   
+  group         permission_group   
+  default       Boolean           @default(false)
+  created_at    DateTime @default(now()) 
+  updated_at    DateTime @updatedAt    
+  delete_at     DateTime?
 
   employees   employee_permission[]
 }
@@ -54,7 +56,7 @@ model employee_permission {
   permission_id Int
   created_at    DateTime @default(now()) 
   updated_at    DateTime @updatedAt
-  delete_at     DateTime @default(now())     
+  delete_at     DateTime?   
 
   employee      employee   @relation(fields: [emp_id], references: [id] )
   permission    permission @relation(fields: [permission_id], references: [id] )
@@ -70,13 +72,27 @@ enum employee_role {
   ADMIN          // ✅ จัดการคำสั่งซื้อ, สินค้า, และลูกค้า แต่ไม่สามารถแก้ไขแอดมินคนอื่นได้
   MANAGER        // ✅ ดูแลพนักงานและตรวจสอบรายงานยอดขาย
   STAFF          // ✅ จัดการคำสั่งซื้อ แต่ไม่สามารถเข้าถึงข้อมูลอื่นๆ
+  CUSTOMER_SUPPORT // ✅ ดูแลบริการลูกค้า ตอบคำถาม แก้ไขคำสั่งซื้อ
+  MARKETING      // ✅ จัดการแคมเปญและโค้ดส่วนลด
 }
+
 
 // ENUM สำหรับสถานะบัญชีพนักงาน
 enum employee_status {
   ACTIVE       // ✅ บัญชีใช้งานได้ปกติ
   INACTIVE     // ✅ บัญชีถูกปิดชั่วคราว
   SUSPENDED    // ❌ บัญชีถูกระงับ
+}
+
+enum permission_group {
+  PRODUCT
+  ORDER
+  CUSTOMER
+  MARKETING
+  PAYMENT
+  SHIPPING
+  REPORT
+  SYSTEM
 }
 
 

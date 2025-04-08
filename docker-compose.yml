@@ -1,4 +1,209 @@
 
+# services:
+#   postgres-master:
+#     image: postgres:15
+#     container_name: postgres-master
+#     restart: always
+#     env_file:
+#       - .env
+#     environment:
+#       POSTGRES_USER: ${POSTGRES_USER_MASTER}
+#       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_MASTER}
+#       POSTGRES_DB: ${POSTGRES_DB}
+#       POSTGRES_REPLICATION_USER: ${POSTGRES_REPLICATION_USER}
+#       POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD}
+#       OSTGRES_INITDB_WAL_LEVEL: logical 
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - master_data:/var/lib/postgresql/data
+#       - ./init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
+#       - ./postgresql.conf:/var/lib/postgresql/data/postgresql.conf 
+#       - ./pg-archive:/var/lib/postgresql/archive 
+#     networks:
+#       - postgres-network
+
+#   postgres-replica:
+#     image: postgres:15
+#     container_name: postgres-replica
+#     restart: always
+#     env_file:
+#       - .env
+#     environment:
+#       POSTGRES_USER: ${POSTGRES_USER_REPLICA}
+#       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_REPLICA}
+#       POSTGRES_DB: ${POSTGRES_DB}
+#       POSTGRES_REPLICATION_ROLE: ${POSTGRES_REPLICATION_ROLE}
+#       POSTGRES_REPLICATION_PRIMARY_HOST: ${POSTGRES_REPLICATION_PRIMARY_HOST}
+#       POSTGRES_REPLICATION_PRIMARY_PORT: ${POSTGRES_REPLICATION_PRIMARY_PORT}
+#       POSTGRES_REPLICATION_USER: ${POSTGRES_REPLICATION_USER}
+#       POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD}
+#     ports:
+#       - "5433:5432"
+#     depends_on:
+#       - postgres-master
+#     networks:
+#       - postgres-network
+  
+#   zookeeper:
+#     image: confluentinc/cp-zookeeper:latest
+#     container_name: zookeeper
+#     ports:
+#       - "2181:2181"
+#     environment:
+#       ZOOKEEPER_CLIENT_PORT: 2181
+#       ZOOKEEPER_TICK_TIME: 2000
+#     networks:
+#       - postgres-network
+
+#   kafka-1:
+#     image: confluentinc/cp-kafka:latest
+#     container_name: kafka-1
+#     ports:
+#       - "9092:9092"  # พอร์ตภายนอกสำหรับ Kafka-1
+#       - "9093:9093"  # พอร์ตภายในสำหรับ Kafka-1
+#     healthcheck:
+#       test: ["CMD", "kafka-broker-api-versions.sh", "--bootstrap-server", "kafka-1:9092", "--list"]
+#       interval: 30s
+#       retries: 3
+#       start_period: 10s
+#       timeout: 30s
+#     environment:
+#       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+#       KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://localhost:9092
+#       KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka-1:9093,OUTSIDE://localhost:9092
+#       KAFKA_LISTENER_NAMES: INSIDE,OUTSIDE
+#       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+#       KAFKA_LISTENER_INTERNAL_PORT: 9093
+#       KAFKA_LISTENER_EXTERNAL_PORT: 9092
+#       KAFKA_LISTENER_INTERNAL_HOST: kafka-1
+#       KAFKA_LISTENER_EXTERNAL_HOST: localhost
+#       KAFKA_LISTENER_INTERNAL_NAME: INSIDE
+#       KAFKA_LISTENER_EXTERNAL_NAME: OUTSIDE
+#       CONNECT_REST_ADVERTISED_HOST_NAME: kafka-1
+#     depends_on:
+#       - zookeeper
+#     networks:
+#       - postgres-network
+
+#   kafka-2:
+#     image: confluentinc/cp-kafka:latest
+#     container_name: kafka-2
+#     ports:
+#       - "9095:9095"  # พอร์ตภายนอกสำหรับ Kafka-2
+#       - "9094:9094"  # พอร์ตภายในสำหรับ Kafka-2
+#     healthcheck:
+#       test: ["CMD", "kafka-broker-api-versions.sh", "--bootstrap-server", "kafka-2:9095", "--list"]
+#       interval: 30s
+#       retries: 3
+#       start_period: 10s
+#       timeout: 30s
+#     environment:
+#       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+#       KAFKA_LISTENERS: INSIDE://0.0.0.0:9094,OUTSIDE://localhost:9095
+#       KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka-2:9094,OUTSIDE://localhost:9095
+#       KAFKA_LISTENER_NAMES: INSIDE,OUTSIDE
+#       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+#       KAFKA_LISTENER_INTERNAL_PORT: 9094
+#       KAFKA_LISTENER_EXTERNAL_PORT: 9095
+#       KAFKA_LISTENER_INTERNAL_HOST: kafka-2
+#       KAFKA_LISTENER_EXTERNAL_HOST: localhost
+#       KAFKA_LISTENER_INTERNAL_NAME: INSIDE
+#       KAFKA_LISTENER_EXTERNAL_NAME: OUTSIDE
+#       CONNECT_REST_ADVERTISED_HOST_NAME: kafka-2
+#     depends_on:
+#       - zookeeper
+#     networks:
+#       - postgres-network
+
+#   kafka-3:
+#     image: confluentinc/cp-kafka:latest
+#     container_name: kafka-3
+#     ports:
+#       - "9096:9096"  # พอร์ตภายนอกสำหรับ Kafka-3
+#       - "9097:9097"  # พอร์ตภายในสำหรับ Kafka-3
+#     healthcheck:
+#       test: ["CMD", "kafka-broker-api-versions.sh", "--bootstrap-server", "kafka-3:9096", "--list"]
+#       interval: 30s
+#       retries: 3
+#       start_period: 10s
+#       timeout: 30s
+#     environment:
+#       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+#       KAFKA_LISTENERS: INSIDE://0.0.0.0:9097,OUTSIDE://localhost:9096
+#       KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka-3:9097,OUTSIDE://localhost:9096
+#       KAFKA_LISTENER_NAMES: INSIDE,OUTSIDE
+#       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+#       KAFKA_LISTENER_INTERNAL_PORT: 9097
+#       KAFKA_LISTENER_EXTERNAL_PORT: 9096
+#       KAFKA_LISTENER_INTERNAL_HOST: kafka-3
+#       KAFKA_LISTENER_EXTERNAL_HOST: localhost
+#       KAFKA_LISTENER_INTERNAL_NAME: INSIDE
+#       KAFKA_LISTENER_EXTERNAL_NAME: OUTSIDE
+#       CONNECT_REST_ADVERTISED_HOST_NAME: kafka-3
+#     depends_on:
+#       - zookeeper
+#     networks:
+#       - postgres-network
+
+
+#   kafka-connect:
+#     image: confluentinc/cp-kafka-connect:latest
+#     container_name: kafka-connect
+#     ports:
+#       - "8083:8083"
+#     environment:
+#       CONNECT_BOOTSTRAP_SERVERS: "kafka-1:9093,kafka-2:9094,kafka-3:9097"
+#       CONNECT_REST_PORT: 8083
+#       CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect 
+#       CONNECT_GROUP_ID: "kafka-connect-group"
+#       CONNECT_CONFIG_STORAGE_TOPIC: "_connect-configs"
+#       CONNECT_OFFSET_STORAGE_TOPIC: "_connect-offsets"
+#       CONNECT_STATUS_STORAGE_TOPIC: "_connect-status"
+#       CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+#       CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+#       CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+#       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      
+#       # 👉 ชี้ plugin path ไปยังที่ mount จริงเท่านั้น
+#       CONNECT_PLUGIN_PATH: "/etc/kafka-connect/plugins"
+#       # ✅ mount plugins ทั้งหมด (รวม debezium + jdbc)
+#     volumes:
+#       - ./plugins:/etc/kafka-connect/plugins
+#     depends_on:
+#       - kafka-1
+#       - kafka-2
+#       - kafka-3
+#     networks:
+#       - postgres-network
+
+
+#   elasticsearch:
+#     image: docker.elastic.co/elasticsearch/elasticsearch:8.6.0
+#     container_name: elasticsearch
+#     environment:
+#       - discovery.type=single-node
+#       - xpack.security.enabled=false
+#     ports:
+#       - "9200:9200"
+#     volumes:
+#       - esdata:/usr/share/elasticsearch/data
+#     networks:
+#       - postgres-network
+
+# volumes:
+#   master_data:
+#   esdata:
+#   pg-archive:
+
+# networks:
+#   postgres-network:
+#     driver: bridge 
+version: '3.8'
+
 services:
   postgres-master:
     image: postgres:15
@@ -12,11 +217,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_REPLICATION_USER: ${POSTGRES_REPLICATION_USER}
       POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD}
+      POSTGRES_INITDB_WAL_LEVEL: logical 
     ports:
       - "5432:5432"
     volumes:
       - master_data:/var/lib/postgresql/data
       - ./init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
+      - ./postgresql.conf:/var/lib/postgresql/data/postgresql.conf 
+      - ./pg-archive:/var/lib/postgresql/archive 
     networks:
       - postgres-network
 
@@ -41,11 +249,164 @@ services:
       - postgres-master
     networks:
       - postgres-network
+  
+  zookeeper:
+      image: confluentinc/cp-zookeeper:latest
+      container_name: zookeeper
+      ports:
+        - "2181:2181"
+      environment:
+        ZOOKEEPER_CLIENT_PORT: 2181
+        ZOOKEEPER_TICK_TIME: 2000
+      networks:
+        - postgres-network
+
+  kafka-1:
+      image: confluentinc/cp-kafka:latest
+      container_name: kafka-1
+      ports:
+        - "9092:9092"
+        - "19092:19092"
+        - "7071:7071"  # พอร์ตสำหรับ Prometheus Scraping
+      environment:
+        KAFKA_BROKER_ID: 1
+        KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+        KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:19092
+        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka-1:19092
+        KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      depends_on:
+        - zookeeper
+      networks:
+        - postgres-network
+
+  kafka-2:
+      image: confluentinc/cp-kafka:latest
+      container_name: kafka-2
+      ports:
+        - "9093:9093"
+        - "19093:19093"
+        - "7072:7072"  # พอร์ตสำหรับ Prometheus Scraping
+      environment:
+        KAFKA_BROKER_ID: 2
+        KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+        KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093,PLAINTEXT_INTERNAL://0.0.0.0:19093
+        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093,PLAINTEXT_INTERNAL://kafka-2:19093
+        KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      depends_on:
+        - zookeeper
+      networks:
+        - postgres-network
+
+  kafka-3:
+      image: confluentinc/cp-kafka:latest
+      container_name: kafka-3
+      ports:
+        - "9094:9094"
+        - "19094:19094"
+        - "7073:7073"  # พอร์ตสำหรับ Prometheus Scraping
+      environment:
+        KAFKA_BROKER_ID: 3
+        KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+        KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094,PLAINTEXT_INTERNAL://0.0.0.0:19094
+        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9094,PLAINTEXT_INTERNAL://kafka-3:19094
+        KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      depends_on:
+        - zookeeper
+      networks:
+        - postgres-network
+
+  kafka-connect:
+    image: confluentinc/cp-kafka-connect:latest
+    container_name: kafka-connect
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka-1:19092,kafka-2:19093,kafka-3:19094
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: kafka-connect-group
+      CONNECT_CONFIG_STORAGE_TOPIC: _connect-configs
+      CONNECT_OFFSET_STORAGE_TOPIC: _connect-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: _connect-status
+      CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_PLUGIN_PATH: /etc/kafka-connect/plugins
+      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
+    volumes:
+      - ./plugins:/etc/kafka-connect/plugins
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+      - schema-registry
+    networks:
+      - postgres-network
+
+
+  schema-registry:
+      image: confluentinc/cp-schema-registry:latest
+      container_name: schema-registry
+      ports:
+        - "8081:8081"
+      environment:
+        SCHEMA_REGISTRY_HOST_NAME: schema-registry
+        SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+        SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19093,PLAINTEXT://kafka-3:19094
+      depends_on:
+        - kafka-1
+        - kafka-2
+        - kafka-3
+      networks:
+        - postgres-network
+
+  prometheus:
+      image: prom/prometheus:latest
+      container_name: prometheus
+      ports:
+        - "9090:9090"
+      volumes:
+        - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      networks:
+        - postgres-network
+
+  grafana:
+      image: grafana/grafana:latest
+      container_name: grafana
+      ports:
+        - "3000:3000"
+      environment:
+        GF_SECURITY_ADMIN_PASSWORD: "admin"
+      networks:
+        - postgres-network
+
+  elasticsearch:
+      image: docker.elastic.co/elasticsearch/elasticsearch:8.6.0
+      container_name: elasticsearch
+      environment:
+        - discovery.type=single-node
+        - xpack.security.enabled=false
+      ports:
+        - "9200:9200"
+      volumes:
+        - esdata:/usr/share/elasticsearch/data
+      networks:
+        - postgres-network
+
 
 volumes:
   master_data:
+  esdata:
+  pg-archive:
 
 networks:
   postgres-network:
-    driver: bridge 
-
+    driver: bridge

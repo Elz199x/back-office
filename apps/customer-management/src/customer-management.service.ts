@@ -5,4 +5,8 @@ export class CustomerManagementService {
   getHello(): string {
     return 'Hello World!';
   }
+  healthCheck(): string {
+    return 'OK'
+  }
 }
+  
