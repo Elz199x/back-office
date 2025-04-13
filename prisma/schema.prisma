@@ -15,24 +15,25 @@ datasource db {
 
 model employee {
   id          Int      @id @default(autoincrement()) 
-  username    String   @db.VarChar(100)
+  username    String   @unique
   password    String
   email       String   @unique @db.VarChar(255)
   firstName   String   @db.VarChar(100)
   lastName    String   @db.VarChar(100)
   phone       String?  @unique @db.VarChar(10) 
   role        employee_role
-  status      employee_status   @default(ACTIVE)
+  status      employee_status?   @default(ACTIVE)
   last_ip     String?
   last_active DateTime? @default(now())
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-  delete_at   DateTime @default(now())
+  deleted_at   DateTime? @default(now())
 
 
   employee_permissions employee_permission[]
 
   @@index([email])
+  @@index([username])
   @@index([lastName, firstName])
   @@index([status])
 }
@@ -42,10 +43,10 @@ model permission {
   name          String   @unique  
   description   String   
   group         permission_group   
-  default       Boolean           @default(false)
+  default       Boolean  @default(false)
   created_at    DateTime @default(now()) 
   updated_at    DateTime @updatedAt    
-  delete_at     DateTime?
+  deleted_at     DateTime?
 
   employees   employee_permission[]
 }
@@ -56,7 +57,7 @@ model employee_permission {
   permission_id Int
   created_at    DateTime @default(now()) 
   updated_at    DateTime @updatedAt
-  delete_at     DateTime?   
+  deleted_at     DateTime?   
 
   employee      employee   @relation(fields: [emp_id], references: [id] )
   permission    permission @relation(fields: [permission_id], references: [id] )

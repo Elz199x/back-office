@@ -10,6 +10,7 @@
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "start-auth:dev": "nest start auth-service --watch",
     "start-employee:dev": "nest start employee-management --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/back-office/main",
@@ -26,8 +27,9 @@
     "@nestjs/core": "^11.0.12",
     "@nestjs/platform-express": "^11.0.12",
     "@nestjs/swagger": "^11.1.0",
-    "@prisma/client": "^6.5.0",
+    "@prisma/client": "^5.22.0",
     "@prisma/extension-read-replicas": "^0.4.1",
+    "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "pg": "^8.14.1",
@@ -81,7 +83,6 @@
     ]
   },
   "prisma": {
-  "seed": "ts-node prisma/seed.ts"
-}
-
+    "seed": "ts-node prisma/seed.ts"
+  }
 }

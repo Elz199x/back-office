@@ -1,0 +1,35 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  http_grpc_port: 9095
+
+clients:
+  - url: "http://loki:3100/api/prom/push"
+
+positions:
+  filename: /tmp/loki-positions
+
+distributors:
+  ring:
+    kvstore:
+      store: inmemory
+      consistency: eventual
+    replication_factor: 1
+
+ingester:
+  chunk_target_size: 1048576
+  max_chunk_age: 1h
+  max_retention_period: 30d
+
+storage_config:
+  boltdb_shipper:
+    directory: /tmp/loki/index
+    retention: 7d
+  aws:
+    s3: s3://<YOUR_BUCKET_NAME>/loki/index
+    s3accesskey: <YOUR_ACCESS_KEY>
+    s3secretkey: <YOUR_SECRET_KEY>
+
+limits_config:
+  max_cache_size: 104857600

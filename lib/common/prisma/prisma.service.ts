@@ -4,7 +4,12 @@ import { readReplicas } from '@prisma/extension-read-replicas'
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  // Use any type to avoid TypeScript errors with the extended client
+  constructor() {
+		super({
+			log: ['query', 'info', 'warn', 'error'],
+			errorFormat: 'pretty',
+		})
+	}
   private prismaReplicaClient: any
 
   async onModuleInit() {
@@ -16,6 +21,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     this.$use(async (params, next) => {
         if (params.action == 'delete') {
           params.args['data'] = { deleted_at: new Date() }
+        }
+        if (params.action == 'create' || params.action == 'createMany') {
+          params.args.data['deleted_at'] = null 
         }
         if (params.action == 'deleteMany') {
           params.action = 'updateMany'
@@ -47,7 +55,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
             params.args['where'] = { deleted_at: null }
           }
         }
-      //}
       return next(params)
     })
   }
@@ -58,21 +65,26 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   private initializeReplicaClient() {
     try {
-      const urls = []
-      const readReplicasUrl = new URL(process.env.DATABASE_RO_URL)
-      readReplicasUrl.searchParams.set('application_name', process.env.APP_NAME)
-      urls.push(readReplicasUrl.toString())
-      this.prismaReplicaClient = this.$extends(
-        readReplicas({
-          url: urls,
-        }),
-      )
-  
-      console.log('✅ Prisma Replica Client initialized successfully!')
+      const primaryUrl = process.env.DATABASE_URL!;
+      const replicaUrl = process.env.DATABASE_RO_URL!;
+      const appName = process.env.APP_NAME!;
+
+      const readReplica = new URL(replicaUrl);
+      readReplica.searchParams.set('application_name', appName);
+
+      const urls = [primaryUrl, readReplica.toString()];
+
+      const baseClient = new PrismaClient();
+      this.prismaReplicaClient = baseClient.$extends(
+        readReplicas({ url: urls }),
+      );
+
+      console.log('✅ Prisma Replica Client initialized successfully!');
     } catch (error) {
-      console.error('❌ Failed to initialize Prisma Replica Client:', error)
+      console.error('❌ Failed to initialize Prisma Replica Client:', error);
     }
   }
+  
   
 
   readReplicas() {

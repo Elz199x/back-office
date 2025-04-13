@@ -1,7 +1,24 @@
-global:
-  scrape_interval: 15s
-
 scrape_configs:
+  - job_name: 'postgres-master'
+    static_configs:
+      - targets: ['postgres-exporter-master:9187']
+      
+  - job_name: 'postgres-replica'
+    static_configs:
+      - targets: ['postgres-exporter-replica:9188']
+
   - job_name: 'kafka'
     static_configs:
-      - targets: ['kafka-1:7071', 'kafka-2:7071', 'kafka-3:7071']
+      - targets: ['kafka-exporter:9308']
+      
+  - job_name: 'mongodb'
+    static_configs:
+      - targets: ['mongodb-exporter:9216']
+
+  - job_name: 'loki'
+    static_configs:
+      - targets: ['loki:3100']
+
+  - job_name: 'promtail'
+    static_configs:
+      - targets: ['promtail:9080']
